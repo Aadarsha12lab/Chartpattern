@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Chart Pattern Master</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      margin: 0;
+      background: #111827;
+      color: #f9fafb;
+      padding: 20px;
+    }
+    h1 { text-align: center; margin-bottom: 20px; color: #22d3ee; }
+    #search {
+      width: 100%;
+      padding: 12px 16px;
+      font-size: 16px;
+      margin-bottom: 20px;
+      border: none;
+      border-radius: 8px;
+      outline: none;
+    }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 20px;
+    }
+    .card {
+      background: #1f2937;
+      border-radius: 12px;
+      overflow: hidden;
+      transition: transform 0.3s ease, box-shadow 0.3s;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.5);
+    }
+    .card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 8px 20px rgba(0,0,0,0.6);
+    }
+    .card img {
+      width: 100%;
+      height: 180px;
+      object-fit: contain;
+      background: #000;
+    }
+    .content {
+      padding: 16px;
+    }
+    .content h3 {
+      margin: 0 0 10px;
+      font-size: 18px;
+      color: #38bdf8;
+    }
+    .info { margin: 6px 0; font-size: 14px; }
+    .buy { color: #4ade80; }
+    .sell { color: #f87171; }
+    @media (max-width: 500px) {
+      h1 { font-size: 20px; }
+      .content h3 { font-size: 16px; }
+    }
+  </style>
+</head>
+<body>
+
+<h1>📊 Chart Pattern Master</h1>
+<input type="text" id="search" placeholder="Search chart pattern...">
+
+<div class="grid" id="patternGrid"></div>
+
+<script>
+  const patterns = [
+    {
+      name: "Head and Shoulders",
+      img: "https://i.ibb.co/6RhqDt74/cf276c0d284ebabd0ee9ddcb4cda0155.jpg",
+      type: "Sell",
+      description: "A reversal pattern indicating the end of an uptrend.",
+      entry: "Break below neckline",
+      stoploss: "Above right shoulder",
+      target: "Height from head to neckline"
+    },
+    {
+      name: "Inverse Head and Shoulders",
+      img: "https://i.ibb.co/WN4c79Sr/348e2f72ecf516a5086669ec70d16a3d.jpg",
+      type: "Buy",
+      description: "A reversal pattern indicating the end of a downtrend.",
+      entry: "Break above neckline",
+      stoploss: "Below right shoulder",
+      target: "Height from head to neckline"
+    },
+    {
+      name: "Double Top",
+      img: "https://i.ibb.co/5Xpcv7q6/2616e290a264093b5cf91b5852f0518e-1.jpg",
+      type: "Sell",
+      description: "A bearish reversal pattern forming two peaks.",
+      entry: "Break below support",
+      stoploss: "Above peaks",
+      target: "Height from top to support"
+    },
+    {
+      name: "Double Bottom",
+      img: "https://i.ibb.co/4wkL6Jzj/download-1.png",
+      type: "Buy",
+      description: "A bullish reversal pattern forming two bottoms.",
+      entry: "Break above resistance",
+      stoploss: "Below bottoms",
+      target: "Height from bottom to resistance"
+    },
+    {
+      name: "Ascending Triangle",
+      img: "https://i.ibb.co/6JrWxsJk/282a64a21e53805dcb3485c36820e073.jpg",
+      type: "Buy",
+      description: "Continuation pattern signaling bullish breakout.",
+      entry: "Break above horizontal resistance",
+      stoploss: "Below ascending trendline",
+      target: "Height of triangle"
+    },
+    {
+      name: "Descending Triangle",
+      img: "https://i.ibb.co/XfPDGkkn/f298e1f738b3f3b2b4697f32d0e119e6.jpg",
+      type: "Sell",
+      description: "Continuation pattern signaling bearish breakout.",
+      entry: "Break below horizontal support",
+      stoploss: "Above descending trendline",
+      target: "Height of triangle"
+    },
+    {
+      name: "Symmetrical Triangle",
+      img: "https://i.ibb.co/0yr9HqTZ/e79f279be7ebedc070107273cdcef5a5-1.jpg",
+      type: "Buy/Sell",
+      description: "Consolidation pattern, breakout can occur either way.",
+      entry: "Breakout direction",
+      stoploss: "Opposite side of triangle",
+      target: "Height of triangle"
+    },
+    {
+      name: "Bullish Flag",
+      img: "https://i.ibb.co/1JMn2dvG/0237566adca9bed8c9db52dc1d836215-1.jpg",
+      type: "Buy",
+      description: "Short-term consolidation in an uptrend.",
+      entry: "Break above flag",
+      stoploss: "Below flag low",
+      target: "Pole height"
+    },
+    {
+      name: "Bearish Flag",
+      img: "https://i.ibb.co/wj3MSGV/c7fcb976d9f9e2dd60532cb5c516c4af-1.jpg",
+      type: "Sell",
+      description: "Short-term consolidation in a downtrend.",
+      entry: "Break below flag",
+      stoploss: "Above flag high",
+      target: "Pole height"
+    },
+    {
+      name: "Cup and Handle",
+      img: "https://i.ibb.co/Cc4vJS3/f15e3e3d0d579f08d39a4ad2f4fd1906.jpg",
+      type: "Buy",
+      description: "Bullish continuation after consolidation.",
+      entry: "Break above handle resistance",
+      stoploss: "Below handle low",
+      target: "Depth of cup"
+    },
+    
+    
+    // Add 20+ more patterns as needed...
+  ];
+
+  const grid = document.getElementById("patternGrid");
+  const search = document.getElementById("search");
+
+  function renderPatterns(list) {
+    grid.innerHTML = "";
+    list.forEach(p => {
+      grid.innerHTML += `
+        <div class="card">
+          <img src="${p.img}" alt="${p.name}">
+          <div class="content">
+            <h3>${p.name}</h3>
+            <div class="info">${p.description}</div>
+            <div class="info"><strong>Entry:</strong> ${p.entry}</div>
+            <div class="info"><strong>Stop Loss:</strong> ${p.stoploss}</div>
+            <div class="info"><strong>Target:</strong> ${p.target}</div>
+            <div class="info ${p.type.toLowerCase()}"><strong>Action:</strong> ${p.type}</div>
+          </div>
+        </div>`;
+    });
+  }
+
+  search.addEventListener("input", () => {
+    const keyword = search.value.toLowerCase();
+    const filtered = patterns.filter(p =>
+      p.name.toLowerCase().includes(keyword) ||
+      p.type.toLowerCase().includes(keyword)
+    );
+    renderPatterns(filtered);
+  });
+
+  renderPatterns(patterns);
+</script>
+
+</body>
+</html>
